@@ -3,8 +3,7 @@ import time
 import threading
 from queue import Queue
 
-lock = threading.Lock()
-data_queue = Queue()
+data_queue: Queue[str] = Queue()
 stop_event = threading.Event()
 
 def generate_heart_rate(device_id):
@@ -18,8 +17,7 @@ def generate_heart_rate(device_id):
 def write_to_file():
     """ 定期将数据队列中的数据写入文件 """
     while not stop_event.is_set():
-        with lock:
-            with open("heart_rate.txt", "a") as file:
+        with open("desktopApp/heart_rate.txt", "a") as file:
                 while not data_queue.empty():
                     file.write(data_queue.get() + "\n")
                 file.flush()
