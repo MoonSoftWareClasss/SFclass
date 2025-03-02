@@ -3,10 +3,9 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QStackedWidget, QLabel,QHBoxLayout   
 from qfluentwidgets import FluentWindow
-from qfluentwidgets import OpacityAniStackedWidget, PopUpAniStackedWidget, setTheme
+from qfluentwidgets import OpacityAniStackedWidget, PopUpAniStackedWidget, setTheme, PushButton
 from qfluentwidgets import SegmentedWidget
-
-from main_page import MainPage
+from qfluentwidgets import FluentIcon as FIF
 
 class MainWindow(FluentWindow):
     
@@ -19,22 +18,21 @@ class MainWindow(FluentWindow):
         
     
     def createWidgets(self):
-        self.mainPage = MainPage(self)
         self.totalStackWidget = OpacityAniStackedWidget(self)
         self.splashScreen = SplashScreen(self)
         # subMainWindow is used to put navigation interface and subStackWidget
         self.subMainWindow = QWidget(self)
-        # display the window on the desktop first
         # that need to be displayed on the right side of navigationInterface
         self.subStackWidget = PopUpAniStackedWidget(self.subMainWindow)
-
+        self.pushButton = PushButton(FIF.FOLDER,"开始", self)
         # create navigation interface
         self.navigationInterface = SegmentedWidget(self.subMainWindow)
 
     def initWidget(self):
         self.initWindow()
-        self.subStackWidget.addWidget(self.mainPage)
-        
+        # self.subStackWidget.addWidget(self.mainPage)
+        self.stackedWidget.addWidget(self.pushButton)
+        self.stackedWidget.setAlignment(self.pushButton, Qt.AlignCenter)
         
     def initWindow(self):
         r = self.devicePixelRatioF()
@@ -45,7 +43,8 @@ class MainWindow(FluentWindow):
         self.show()
         QApplication.processEvents()
         
-    
+        
+
     
 class SplashScreen(QWidget):
 

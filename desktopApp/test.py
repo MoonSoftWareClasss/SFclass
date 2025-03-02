@@ -29,11 +29,11 @@ class Demo(QWidget):
         self.mainLayout = QVBoxLayout(self.mainInterface)
         
         # 创建标题标签
-        self.mainTitle = QLabel('Main Interface', self.mainInterface)
+        self.mainTitle = QLabel('TEST', self.mainInterface)
         self.mainTitle.setAlignment(Qt.AlignTop)
         
         # 创建 TogglePushButton
-        self.toggleButton = TogglePushButton('切换按钮', self.mainInterface)
+        self.toggleButton = TogglePushButton('开始', self.mainInterface)
         self.toggleButton.clicked.connect(self.onToggleButtonClicked)
         
         # 将控件添加到主界面布局
