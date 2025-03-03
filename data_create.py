@@ -50,11 +50,38 @@ def write_to_file():
                 file.flush()
         time.sleep(3)
 
+def 验证数据合理性(最近5次数据):
+    """验证最近5次数据的合理性"""
+    if len(最近5次数据) < 5:
+        return True
+
+    心率 = [int(数据.split('心率：')[1].split('次/分')[0]) for 数据 in 最近5次数据]
+    配速 = [float(数据.split('配速：')[1].split('公里/小时')[0]) for 数据 in 最近5次数据]
+
+    def 计算拐点数量(数据):
+        拐点数量 = 0
+        for i in range(1, 4):  # 只检查中间的三个数据点
+            if (数据[i] > 数据[i-1] and 数据[i] > 数据[i+1]) or (数据[i] < 数据[i-1] and 数据[i] < 数据[i+1]):
+                拐点数量 += 1
+        return 拐点数量
+
+    心率拐点数量 = 计算拐点数量(心率)
+    配速拐点数量 = 计算拐点数量(配速)
+
+    if 心率拐点数量 >= 2 or 配速拐点数量 >= 2:
+        logging.warning(f"不合理数据检测到: {最近5次数据}")
+        return False
+
+    return True
+
 def 设备模拟(设备编号, 基准时间):
     """单个设备的数据生成逻辑"""
     # 生成设备专属随机误差（固定值）
     配速误差 = random.uniform(-1, 1)
     心率误差 = random.uniform(-5, 5)
+    
+    # 初始化最近5次数据的数组
+    最近5次数据 = []
 
     for 时间差 in range(0, 367, 2):  # 总时长366秒，每2秒一次
         当前时间 = 基准时间 + timedelta(seconds=时间差)
@@ -74,10 +101,20 @@ def 设备模拟(设备编号, 基准时间):
 
         输出内容 = f"设备{设备编号}: 时间{时间戳}，心率：{格式化心率}次/分，配速：{格式化配速}公里/小时"
 
+        # 更新最近5次数据数组
+        最近5次数据.append(输出内容)
+        if len(最近5次数据) > 5:
+            最近5次数据.pop(0)
+
+        # 验证数据合理性
+        fl = 验证数据合理性(最近5次数据)
+
         with print_lock:
             print(输出内容)
+            if not fl:
+                print("数据异常\n")
 
-        time.sleep(2)
+        time.sleep(1)
 
 
 if __name__ == "__main__":
