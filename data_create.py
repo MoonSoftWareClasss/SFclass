@@ -1,10 +1,20 @@
 import time
 import threading
 import random
+from queue import Queue
 from datetime import datetime, timedelta
+import logging
 
 # 全局打印锁防止输出混乱
 print_lock = threading.Lock()
+data_queue: Queue[str] = Queue()
+stop_event = threading.Event()
+
+logging.basicConfig(
+    filename='desktopApp/app.log', 
+    level=logging.WARNING, 
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 
 def 生成配速(当前时间):
@@ -29,6 +39,16 @@ def 生成心率(当前时间):
         持续时间 = 当前时间 - 66
         return 160 - (160 - 80) * (持续时间 / 300) if 持续时间 < 300 else 80
 
+def write_to_file():
+    """ 定期将数据队列中的数据写入文件 """
+    while not stop_event.is_set():
+        with open("desktopApp/heart_rate.txt", "a") as file:
+                while not data_queue.empty():
+                    data = data_queue.get()
+                    file.write(data + "\n")
+                    logging.info(f"已写入文件: {data}")
+                file.flush()
+        time.sleep(3)
 
 def 设备模拟(设备编号, 基准时间):
     """单个设备的数据生成逻辑"""
@@ -63,6 +83,15 @@ def 设备模拟(设备编号, 基准时间):
 if __name__ == "__main__":
     开始时间 = datetime(2025, 3, 1, 16, 0, 0)  # 设定基准时间
     线程池 = []
+
+    with open("heart_rate.txt", "a") as file:
+        start_message = f"Start recording:{time.ctime()}\n"
+        file.write(start_message)
+        file.flush()
+        logging.info(start_message.strip())
+
+    writer_thread = threading.Thread(target=write_to_file, daemon=True)
+    writer_thread.start()
 
     # 创建10个设备线程
     for 设备编号 in range(1, 11):
