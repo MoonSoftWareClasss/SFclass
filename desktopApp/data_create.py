@@ -7,7 +7,7 @@ import logging
 
 # 全局打印锁防止输出混乱
 print_lock = threading.Lock()
-data_queue: Queue[str] = Queue()
+data_queue = Queue()
 stop_event = threading.Event()
 
 logging.basicConfig(
@@ -136,10 +136,6 @@ def single_device_simulation(time_diff):
     
     return formatted_heart_rate, formatted_pace
 
-
-
-
-
 if __name__ == "__main__":
     start_time = datetime(2025, 3, 1, 16, 0, 0)  # 设定基准时间
     thread_pool = []
@@ -162,6 +158,6 @@ if __name__ == "__main__":
     # 等待所有线程完成
     for device in thread_pool:
         device.join()
-        
-    
+
+
         

@@ -25,7 +25,7 @@ class HeartRateWidget(QWidget):
         # 顶部状态栏
         top_bar = QHBoxLayout()
         self.steps_label = QLabel(f"参数: {random.randint(3000, 10000)}")
-        self.id_label = QLabel(f"机器id: {random.randint(150, 450)}kcal")
+        self.id_label = QLabel(f"机器id: {random.randint(1,11)}")
         top_bar.addWidget(self.steps_label)
         top_bar.addWidget(self.id_label)
         
